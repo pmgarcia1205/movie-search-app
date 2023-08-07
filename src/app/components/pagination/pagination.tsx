@@ -1,8 +1,10 @@
 import * as React from "react";
 import { Pagination, PaginationItem, Stack } from "@mui/material";
+import { useMediaQuery } from "usehooks-ts";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { isSmallDevice } from "@/app/hooks/media-query";
 
 interface CustomPaginationProps {
   count: number;
@@ -13,9 +15,11 @@ const CustomPagination: React.FC<CustomPaginationProps> = (
   props: CustomPaginationProps
 ) => {
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2} style={{ display: "flex", alignItems: "center" }}>
       <Pagination
         count={props.count}
+        color="primary"
+        size={isSmallDevice() ? "small" : "large"}
         renderItem={(item) => (
           <PaginationItem
             slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}

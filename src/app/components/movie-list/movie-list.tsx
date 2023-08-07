@@ -9,25 +9,29 @@ import {
 } from "@mui/material";
 import { Image } from "mui-image";
 
-interface CustomListProps {
+interface MovieListProps {
   movies: ShortMovieData[];
   totalResults: number;
+  Response: string;
 }
 
-const CustomList: React.FC<CustomListProps> = (props: CustomListProps) => {
+const MovieList: React.FC<MovieListProps> = (props: MovieListProps) => {
   return props.movies.length > 0 ? (
     <List sx={{ width: "100%", maxWidth: 1000, minWidth: 300 }}>
       {props.movies.map((movie, index) => (
         <>
           <ListItem alignItems="flex-start" key={movie.imdbID}>
-            <Image
-              src={movie.Poster}
-              alt={movie.Title}
-              width={164}
-              height={164}
-              fit="scale-down"
-              showLoading
-            />
+            <div>
+              <Image
+                src={movie.Poster}
+                alt={movie.Title}
+                width={164}
+                height={164}
+                fit="cover"
+                showLoading
+                style={{ paddingRight: "20px" }}
+              />
+            </div>
             <ListItemText
               primary={
                 <React.Fragment>
@@ -64,16 +68,18 @@ const CustomList: React.FC<CustomListProps> = (props: CustomListProps) => {
             />
           </ListItem>
           {index !== props.movies.length - 1 && (
-            <Divider variant="fullWidth" component="li" />
+            <Divider variant="fullWidth" component="li" key={index} />
           )}
         </>
       ))}
     </List>
   ) : (
     <div>
-      <h1 style={{ color: "black" }}>Sorry, no results found!</h1>
+      {props.Response === "False" && (
+        <h1 style={{ color: "black" }}>Sorry, no results found!</h1>
+      )}
     </div>
   );
 };
 
-export default CustomList;
+export default MovieList;

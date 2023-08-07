@@ -1,8 +1,13 @@
 "use client";
-import CustomList from "@/app/components/movie-list/movie-list";
+import MovieList from "@/app/components/movie-list/movie-list";
 import CustomPagination from "@/app/components/pagination/pagination";
 import SearchBar from "@/app/components/search-bar/search-bar";
 import { searchMoviesByTitle } from "@/app/services/movieService";
+import {
+  localStorageClear,
+  localStorageGetKey,
+  localStorageSaveKey,
+} from "@/app/utils/local-storage";
 import React, { useEffect } from "react";
 
 const SearchPage: React.FC = () => {
@@ -15,11 +20,18 @@ const SearchPage: React.FC = () => {
   const [querySearch, setQuerySearch] = React.useState<string>("");
   const [movies, setMovies] = React.useState<ShortMovieData[]>([]);
   const [totalResults, setTotalResults] = React.useState<number>(0);
+  const [page, setPage] = React.useState<number>(1);
 
   const handleSearch = async (query: string, page?: number) => {
     try {
-      const response = await searchMoviesByTitle(query, page);
-      setSearchResults(response);
+      const localData = localStorageGetKey(`${query}-${page || 1}`);
+      if (localData === null) {
+        const response = await searchMoviesByTitle(query, page);
+        localStorageSaveKey(`${query}-${page || 1}`, response);
+        setSearchResults(response);
+      } else {
+        setSearchResults(localData);
+      }
     } catch (error) {
       console.error("Error fetching search results:", error);
     }
@@ -33,7 +45,18 @@ const SearchPage: React.FC = () => {
     event: React.ChangeEvent<unknown>,
     value: number
   ) => {
+    setPage(value);
     handleSearch(querySearch, value);
+  };
+
+  const handleClearSearch = (wipeLocalTorage?: boolean) => {
+    setQuerySearch("");
+    setSearchResults({
+      Search: [],
+      totalResults: "0",
+      Response: "True",
+    });
+    if (wipeLocalTorage) localStorageClear();
   };
 
   useEffect(() => {
@@ -47,13 +70,18 @@ const SearchPage: React.FC = () => {
   }, [searchResults]);
 
   return (
-    <div>
+    <div className="search-container">
       <SearchBar
         querySearch={querySearch}
         handleSearch={handleSearch}
         setQuerySearch={handleSearchBarInputChange}
+        currentPage={page}
       />
-      <CustomList movies={movies} totalResults={totalResults} />
+      <MovieList
+        movies={movies}
+        totalResults={totalResults}
+        Response={searchResults.Response}
+      />
       {totalResults > 0 && (
         <CustomPagination
           count={Math.floor(totalResults / 10)}

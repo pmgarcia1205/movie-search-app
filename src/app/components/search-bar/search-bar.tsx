@@ -4,10 +4,16 @@ import Paper from "@mui/material/Paper";
 import InputBase from "@mui/material/InputBase";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
+import {
+  isLargeDevice,
+  isMediumDevice,
+  isSmallDevice,
+} from "@/app/hooks/media-query";
 
 interface SearchBarProps {
   querySearch: string;
-  handleSearch: (query: string) => void;
+  currentPage?: number;
+  handleSearch: (query: string, currentPage?: number) => void;
   setQuerySearch: (query: string) => void;
 }
 
@@ -23,9 +29,9 @@ const SearchBar: React.FC<SearchBarProps> = (props: SearchBarProps) => {
         display: "flex",
         alignItems: "center",
         minWidth: "300px",
-        maxWidth: "1000px",
         margin: "10px 10px",
       }}
+      className="search-bar"
       variant="elevation"
       elevation={5}
     >
@@ -37,7 +43,7 @@ const SearchBar: React.FC<SearchBarProps> = (props: SearchBarProps) => {
         onChange={handleInputChange}
         onKeyDown={(event) => {
           if (event.key === "Enter") {
-            props.handleSearch(props.querySearch);
+            props.handleSearch(props.querySearch, props.currentPage);
           }
         }}
       />
@@ -45,7 +51,7 @@ const SearchBar: React.FC<SearchBarProps> = (props: SearchBarProps) => {
         type="button"
         sx={{ p: "10px" }}
         aria-label="search"
-        onClick={() => props.handleSearch(props.querySearch)}
+        onClick={() => props.handleSearch(props.querySearch, props.currentPage)}
       >
         <SearchIcon />
       </IconButton>
