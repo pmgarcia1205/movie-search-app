@@ -66,6 +66,7 @@ const SearchPage: React.FC = () => {
     } else {
       setMovies([]);
       setTotalResults(0);
+      setPage(1);
     }
   }, [searchResults]);
 
